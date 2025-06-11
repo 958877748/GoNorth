@@ -95,6 +95,9 @@ namespace GoNorth
         /// <param name="services">Services</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            // Register MongoDbClientFactory
+            services.AddSingleton<IMongoDbClientFactory, MongoDbClientFactory>();
+            
             // Initialize MongoDb configuration
             var mongoDbConfig = Configuration.GetMongoDbConfig();
             services.AddSingleton(mongoDbConfig);

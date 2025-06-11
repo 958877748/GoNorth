@@ -68,15 +68,15 @@ namespace GoNorth.Data
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="configuration">Configuration</param>
+        /// <param name="clientFactory">MongoDB客户端工厂</param>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="npcTagDbAccess">Npc Tag Db Access</param>
         /// <param name="itemTagDbAccess">Item Tag Db Access</param>
         /// <param name="skillTagDbAccess">Skill Tag Db Access</param>
         /// <param name="timelineDbAccess">Timeline Db Access</param>
         /// <param name="lockServiceDbAccess">Lock Db Access</param>
-        public MongoDbSetup(IConfiguration configuration, IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess npcTagDbAccess, IStyrItemTagDbAccess itemTagDbAccess, IEvneSkillTagDbAccess skillTagDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockServiceDbAccess)
-            : base(configuration)
+        public MongoDbSetup(IMongoDbClientFactory clientFactory, IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess npcTagDbAccess, IStyrItemTagDbAccess itemTagDbAccess, IEvneSkillTagDbAccess skillTagDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockServiceDbAccess)
+            : base(clientFactory)
         {
             _projectDbAccess = projectDbAccess;
             _npcTagDbAccess = npcTagDbAccess;
