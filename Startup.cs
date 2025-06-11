@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -384,6 +384,29 @@ namespace GoNorth
         /// <param name="timerJobManager">Timer Job Manager</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ITimerJobManager timerJobManager)
         {
+            // 记录所有环境变量
+            Console.WriteLine("===== 环境变量开始 =====");
+            var envVars = Environment.GetEnvironmentVariables();
+            foreach (DictionaryEntry envVar in envVars)
+            {
+                // 过滤掉敏感信息
+                string value = envVar.Key.ToString().ToUpper().Contains("PASSWORD") || 
+                              envVar.Key.ToString().ToUpper().Contains("SECRET") ||
+                              envVar.Key.ToString().ToUpper().Contains("KEY") ||
+                              envVar.Key.ToString().ToUpper().Contains("CONNECTION")
+                    ? "[REDACTED]" 
+                    : envVar.Value?.ToString();
+                    
+                Console.WriteLine($"{envVar.Key} = {value}");
+            }
+            Console.WriteLine("===== 环境变量结束 =====");
+            
+            // 显式检查MongoDB相关环境变量
+            Console.WriteLine("\n===== MongoDB 配置 =====");
+            Console.WriteLine($"MONGO_DB_CONNECTION_STRING 存在: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MONGO_DB_CONNECTION_STRING"))}");
+            Console.WriteLine($"MONGO_DB_DB_NAME 存在: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MONGO_DB_DB_NAME"))}");
+            Console.WriteLine("========================\n");
+
             ConfigurationData configData = Configuration.Get<ConfigurationData>();
             
             if (env.IsDevelopment())
