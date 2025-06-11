@@ -85,9 +85,40 @@ namespace GoNorth
         /// Constructor
         /// </summary>
         /// <param name="configuration">Configuration for the application</param>
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            
+            // 在构造函数中尽早配置 MongoDB 连接字符串
+            var mongoDbConnectionString = Environment.GetEnvironmentVariable("MONGO_DB_CONNECTION_STRING");
+            var mongoDbName = Environment.GetEnvironmentVariable("MONGO_DB_DB_NAME");
+            
+            if (!string.IsNullOrEmpty(mongoDbConnectionString) || !string.IsNullOrEmpty(mongoDbName))
+            {
+                // 创建新的配置构建器
+                var configBuilder = new ConfigurationBuilder()
+                    .SetBasePath(env.ContentRootPath)
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables();
+                
+                // 构建配置
+                var config = configBuilder.Build();
+                
+                // 更新配置值
+                if (!string.IsNullOrEmpty(mongoDbConnectionString))
+                {
+                    config["MongoDb:ConnectionString"] = mongoDbConnectionString;
+                    Console.WriteLine($"在 Startup 构造函数中设置 MongoDB 连接字符串: {MaskSensitiveInfo(mongoDbConnectionString)}");
+                }
+                if (!string.IsNullOrEmpty(mongoDbName))
+                {
+                    config["MongoDb:DbName"] = mongoDbName;
+                    Console.WriteLine($"在 Startup 构造函数中设置数据库名: {mongoDbName}");
+                }
+                
+                // 重新构建配置
+                Configuration = configBuilder.Build();
+            }
         }
 
         /// <summary>
@@ -101,7 +132,37 @@ namespace GoNorth
         /// <param name="services">Services</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            // 从环境变量中获取 MongoDB 配置
+            var mongoDbConnectionString = Environment.GetEnvironmentVariable("MONGO_DB_CONNECTION_STRING");
+            var mongoDbName = Environment.GetEnvironmentVariable("MONGO_DB_DB_NAME");
+            
+            // 如果环境变量中有配置，则覆盖 appsettings.json 中的配置
+            if (!string.IsNullOrEmpty(mongoDbConnectionString) || !string.IsNullOrEmpty(mongoDbName))
+            {
+                var mongoDbConfig = new MongoDbConfig();
+                if (!string.IsNullOrEmpty(mongoDbConnectionString))
+                {
+                    mongoDbConfig.ConnectionString = mongoDbConnectionString;
+                    Console.WriteLine($"使用环境变量中的 MongoDB 连接字符串: {MaskSensitiveInfo(mongoDbConnectionString)}");
+                }
+                if (!string.IsNullOrEmpty(mongoDbName))
+                {
+                    mongoDbConfig.DbName = mongoDbName;
+                    Console.WriteLine($"使用环境变量中的数据库名: {mongoDbName}");
+                }
+                
+                Configuration.GetSection("MongoDb").Bind(mongoDbConfig);
+                services.Configure<MongoDbConfig>(config => {
+                    if (!string.IsNullOrEmpty(mongoDbConnectionString)) config.ConnectionString = mongoDbConnectionString;
+                    if (!string.IsNullOrEmpty(mongoDbName)) config.DbName = mongoDbName;
+                });
+            }
+            
             ConfigurationData configData = Configuration.Get<ConfigurationData>();
+            
+            // 记录最终使用的配置
+            Console.WriteLine($"最终使用的 MongoDB 连接字符串: {MaskSensitiveInfo(configData.MongoDb.ConnectionString)}");
+            Console.WriteLine($"最终使用的数据库名: {configData.MongoDb.DbName}");
             
             // Add Identity
             services.AddIdentity<GoNorthUser, GoNorthRole>(options => {
