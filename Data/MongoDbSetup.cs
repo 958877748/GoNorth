@@ -78,7 +78,7 @@ namespace GoNorth.Data
         public MongoDbSetup(IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess npcTagDbAccess, 
             IStyrItemTagDbAccess itemTagDbAccess, IEvneSkillTagDbAccess skillTagDbAccess, 
             ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockServiceDbAccess, 
-            IConfiguration configuration) : base(configuration)
+            IOptions<ConfigurationData> configuration) : base(configuration)
         {
             _projectDbAccess = projectDbAccess;
             _npcTagDbAccess = npcTagDbAccess;

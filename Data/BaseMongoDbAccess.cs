@@ -36,29 +36,21 @@ namespace GoNorth.Data
         /// Constructor
         /// </summary>
         /// <param name="configuration">Configuration</param>
-        public BaseMongoDbAccess(IConfiguration configuration) : this(configuration.GetMongoDbConfig())
-        {
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="configurationData">Configuration Data</param>
-        public BaseMongoDbAccess(ConfigurationData configurationData)
+        public BaseMongoDbAccess(IConfiguration configuration)
         {
             // 优先从环境变量中获取配置
-            string connectionString = configurationData.MongoDbConnectionString;
-            string dbName = configurationData.MongoDbDbName;
+            string connectionString = configuration.GetValue<string>("MONGO_DB_CONNECTION_STRING");
+            string dbName = configuration.GetValue<string>("MONGO_DB_DB_NAME");
             
             // 如果环境变量中没有配置，则从appsettings中获取
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = configurationData.MongoDbConnectionString;
+                connectionString = configuration["MongoDb:ConnectionString"];
             }
             
             if (string.IsNullOrEmpty(dbName))
             {
-                dbName = configurationData.MongoDbDbName;
+                dbName = configuration["MongoDb:DbName"];
             }
 
             _Client = new MongoClient(connectionString);
