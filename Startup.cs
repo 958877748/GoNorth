@@ -90,38 +90,45 @@ namespace GoNorth
         /// <param name="configuration">Configuration for the application</param>
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            // 创建新的配置构建器
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
             
-            // 在构造函数中尽早配置 MongoDB 连接字符串
+            // 构建配置
+            var config = configBuilder.Build();
+            
+            // 读取环境变量
             var mongoDbConnectionString = Environment.GetEnvironmentVariable("MONGO_DB_CONNECTION_STRING");
             var mongoDbName = Environment.GetEnvironmentVariable("MONGO_DB_DB_NAME");
             
+            // 如果环境变量中有配置，则更新配置
             if (!string.IsNullOrEmpty(mongoDbConnectionString) || !string.IsNullOrEmpty(mongoDbName))
             {
-                // 创建新的配置构建器
-                var configBuilder = new ConfigurationBuilder()
-                    .SetBasePath(env.ContentRootPath)
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables();
+                var configValues = new Dictionary<string, string>();
                 
-                // 构建配置
-                var config = configBuilder.Build();
-                
-                // 更新配置值
                 if (!string.IsNullOrEmpty(mongoDbConnectionString))
                 {
-                    config["MongoDb:ConnectionString"] = mongoDbConnectionString;
+                    configValues["MongoDb:ConnectionString"] = mongoDbConnectionString;
                     Console.WriteLine($"在 Startup 构造函数中设置 MongoDB 连接字符串: {MaskSensitiveInfo(mongoDbConnectionString)}");
                 }
                 if (!string.IsNullOrEmpty(mongoDbName))
                 {
-                    config["MongoDb:DbName"] = mongoDbName;
+                    configValues["MongoDb:DbName"] = mongoDbName;
                     Console.WriteLine($"在 Startup 构造函数中设置数据库名: {mongoDbName}");
                 }
                 
-                // 重新构建配置
-                Configuration = configBuilder.Build();
+                // 使用内存配置提供程序添加配置
+                configBuilder.AddInMemoryCollection(configValues);
             }
+            
+            // 构建最终配置
+            Configuration = configBuilder.Build();
+            
+            // 记录最终配置
+            Console.WriteLine($"最终配置 - MongoDB 连接字符串: {MaskSensitiveInfo(Configuration["MongoDb:ConnectionString"])}");
+            Console.WriteLine($"最终配置 - 数据库名: {Configuration["MongoDb:DbName"]}");
         }
 
         /// <summary>
