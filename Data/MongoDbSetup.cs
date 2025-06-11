@@ -17,6 +17,7 @@ using GoNorth.Data.Tale;
 using GoNorth.Data.TaskManagement;
 using GoNorth.Data.Timeline;
 using GoNorth.Data.User;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
