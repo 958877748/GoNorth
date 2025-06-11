@@ -123,6 +123,32 @@ namespace GoNorth
         }
 
         /// <summary>
+        /// 隐藏敏感信息（如密码）
+        /// </summary>
+        /// <param name="connectionString">连接字符串</param>
+        /// <returns>隐藏敏感信息后的连接字符串</returns>
+        private string MaskSensitiveInfo(string connectionString)
+        {
+            if (string.IsNullOrEmpty(connectionString))
+                return string.Empty;
+
+            try
+            {
+                var mongoUrl = new MongoDB.Driver.MongoUrl(connectionString);
+                if (string.IsNullOrEmpty(mongoUrl.Password))
+                    return connectionString;
+
+                // 隐藏密码
+                return connectionString.Replace($":{mongoUrl.Password}@", ":***@");
+            }
+            catch
+            {
+                // 如果解析失败，返回原始字符串
+                return connectionString;
+            }
+        }
+
+        /// <summary>
         /// Configuration
         /// </summary>
         public IConfiguration Configuration { get; }
