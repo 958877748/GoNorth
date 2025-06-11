@@ -74,6 +74,8 @@ using GoNorth.Services.TimerJob.JobDefinitions;
 using GoNorth.Data.StateMachines;
 using GoNorth.Services.Export.StateMachines;
 using Microsoft.AspNetCore.Hosting;
+using MongoDB.Driver;
+using MongoDB.Driver.Core.Configuration;
 
 namespace GoNorth
 {
