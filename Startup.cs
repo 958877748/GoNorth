@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -95,6 +95,9 @@ namespace GoNorth
         /// <param name="services">Services</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            // Initialize MongoDb configuration
+            var mongoDbConfig = Configuration.GetMongoDbConfig();
+            services.AddSingleton(mongoDbConfig);
             ConfigurationData configData = Configuration.Get<ConfigurationData>();
             
             // Add Identity
