@@ -74,8 +74,10 @@ namespace GoNorth.Data
         /// <param name="timelineDbAccess">Timeline Db Access</param>
         /// <param name="lockServiceDbAccess">Lock Service Db Access</param>
         /// <param name="configuration">Configuration</param>
-        public MongoDbSetup(IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess npcTagDbAccess, IStyrItemTagDbAccess itemTagDbAccess, IEvneSkillTagDbAccess skillTagDbAccess, ITimelineDbAccess timelineDbAccess, 
-                            ILockServiceDbAccess lockServiceDbAccess, IOptions<ConfigurationData> configuration) : base(configuration)
+        public MongoDbSetup(IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess npcTagDbAccess, 
+            IStyrItemTagDbAccess itemTagDbAccess, IEvneSkillTagDbAccess skillTagDbAccess, 
+            ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockServiceDbAccess, 
+            IConfiguration configuration) : base(configuration)
         {
             _projectDbAccess = projectDbAccess;
             _npcTagDbAccess = npcTagDbAccess;

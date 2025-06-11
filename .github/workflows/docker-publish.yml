@@ -4,12 +4,12 @@ on:
   workflow_dispatch: # 手动触发
   push:
     branches:
-      - main
+      - mongodb
     paths:
       - '**'
   pull_request:
     branches:
-      - main
+      - mongodb
     paths:
       - '**'
 
