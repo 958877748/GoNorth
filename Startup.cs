@@ -101,6 +101,23 @@ namespace GoNorth
             
             // Register configuration
             services.AddSingleton<IConfiguration>(Configuration);
+            
+            // Register MongoDbSetup
+            services.AddSingleton<IDbSetup>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var projectDbAccess = provider.GetRequiredService<IProjectDbAccess>();
+                var npcTagDbAccess = provider.GetRequiredService<IKortistoNpcTagDbAccess>();
+                var itemTagDbAccess = provider.GetRequiredService<IStyrItemTagDbAccess>();
+                var skillTagDbAccess = provider.GetRequiredService<IEvneSkillTagDbAccess>();
+                var timelineDbAccess = provider.GetRequiredService<ITimelineDbAccess>();
+                var lockServiceDbAccess = provider.GetRequiredService<ILockServiceDbAccess>();
+                
+                return new MongoDbSetup(configuration, projectDbAccess, npcTagDbAccess, itemTagDbAccess, skillTagDbAccess, timelineDbAccess, lockServiceDbAccess);
+            });
+            
+            // Register AutoDataMigrator
+            services.AddHostedService<AutoDataMigrator>();
             ConfigurationData configData = Configuration.Get<ConfigurationData>();
             
             // Add Identity
