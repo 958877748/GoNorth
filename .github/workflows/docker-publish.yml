@@ -29,21 +29,16 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ghcr.io/958877748/GoNorth
-        tags: |
-          type=schedule,date-format=yyyy-MM-dd
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v3
       with:
         context: .
-        push: ${{ github.event_name != 'pull_request' }}
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        push: true
+        tags: |
+          ghcr.io/958877748/gonorth:latest
+          ghcr.io/958877748/gonorth:${{ github.sha }}
+          ghcr.io/958877748/gonorth:${{ github.ref_name }}
+        labels: |
+          org.opencontainers.image.source=${{ github.repository }}
+          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.version=${{ github.ref_name }}
