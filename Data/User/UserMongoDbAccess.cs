@@ -30,7 +30,7 @@ namespace GoNorth.Data.User
         /// Constructor
         /// </summary>
         /// <param name="configuration">Configuration</param>
-        public UserMongoDbAccess(IOptions<ConfigurationData> configuration) : base(configuration)
+        public UserMongoDbAccess(IConfiguration configuration) : base(configuration)
         {
             _UserCollection = _Database.GetCollection<GoNorthUser>(UserCollectionName);
         }

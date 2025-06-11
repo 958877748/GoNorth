@@ -30,7 +30,7 @@ namespace GoNorth.Data.Timeline
         /// Constructor
         /// </summary>
         /// <param name="configuration">Configuration</param>
-        public TimelineMongoDbAccess(IOptions<ConfigurationData> configuration) : base(configuration)
+        public TimelineMongoDbAccess(IConfiguration configuration) : base(configuration)
         {
             _TimelineCollection = _Database.GetCollection<TimelineEntry>(TimelineCollectionName);
         }

@@ -34,7 +34,7 @@ namespace GoNorth.Data.Aika
         /// Constructor
         /// </summary>
         /// <param name="configuration">Configuration</param>
-        public AikaQuestMongoDbAccess(IOptions<ConfigurationData> configuration) : base(configuration)
+        public AikaQuestMongoDbAccess(IConfiguration configuration) : base(configuration)
         {
             _QuestCollection = _Database.GetCollection<AikaQuest>(AikaQuestCollectionName);
         }
