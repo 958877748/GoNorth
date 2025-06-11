@@ -11,10 +11,6 @@ services:
       - SkillImages:/app/SkillImages
     ports:
      - 5000:80
-  mongo:
-    image: 'mongo'
-    volumes:
-      - GoNorthMongoData:/data/db
 
 volumes:
   MapImages:
@@ -28,6 +24,4 @@ volumes:
   TaskImages:
     external: true
   SkillImages:
-    external: true
-  GoNorthMongoData:
     external: true
