@@ -98,6 +98,9 @@ namespace GoNorth
             // Initialize MongoDb configuration
             var mongoDbConfig = Configuration.GetMongoDbConfig();
             services.AddSingleton(mongoDbConfig);
+            
+            // Register configuration
+            services.AddSingleton<IConfiguration>(Configuration);
             ConfigurationData configData = Configuration.Get<ConfigurationData>();
             
             // Add Identity
