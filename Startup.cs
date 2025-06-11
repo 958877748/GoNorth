@@ -73,6 +73,7 @@ using GoNorth.Services.TimerJob;
 using GoNorth.Services.TimerJob.JobDefinitions;
 using GoNorth.Data.StateMachines;
 using GoNorth.Services.Export.StateMachines;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GoNorth
 {
