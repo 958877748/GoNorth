@@ -159,32 +159,34 @@ namespace GoNorth
         /// <param name="services">Services</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            // 从环境变量中获取 MongoDB 配置
-            var mongoDbConnectionString = Environment.GetEnvironmentVariable("MONGO_DB_CONNECTION_STRING");
-            var mongoDbName = Environment.GetEnvironmentVariable("MONGO_DB_DB_NAME");
+            // 配置 MongoDB 选项
+            services.Configure<MongoDbConfig>(Configuration.GetSection("MongoDb"));
             
-            // 如果环境变量中有配置，则覆盖 appsettings.json 中的配置
-            if (!string.IsNullOrEmpty(mongoDbConnectionString) || !string.IsNullOrEmpty(mongoDbName))
-            {
-                var mongoDbConfig = new MongoDbConfig();
-                if (!string.IsNullOrEmpty(mongoDbConnectionString))
-                {
-                    mongoDbConfig.ConnectionString = mongoDbConnectionString;
-                    Console.WriteLine($"使用环境变量中的 MongoDB 连接字符串: {MaskSensitiveInfo(mongoDbConnectionString)}");
-                }
-                if (!string.IsNullOrEmpty(mongoDbName))
-                {
-                    mongoDbConfig.DbName = mongoDbName;
-                    Console.WriteLine($"使用环境变量中的数据库名: {mongoDbName}");
-                }
-                
-                Configuration.GetSection("MongoDb").Bind(mongoDbConfig);
-                services.Configure<MongoDbConfig>(config => {
-                    if (!string.IsNullOrEmpty(mongoDbConnectionString)) config.ConnectionString = mongoDbConnectionString;
-                    if (!string.IsNullOrEmpty(mongoDbName)) config.DbName = mongoDbName;
-                });
-            }
+            // 获取配置并记录
+            var mongoConfig = new MongoDbConfig();
+            Configuration.GetSection("MongoDb").Bind(mongoConfig);
             
+            Console.WriteLine($"配置加载 - MongoDB 连接字符串: {MaskSensitiveInfo(mongoConfig.ConnectionString)}");
+            Console.WriteLine($"配置加载 - 数据库名: {mongoConfig.DbName}");
+            
+            // 显式注册 MongoDbConfig 为单例，确保所有服务使用相同的配置
+            services.AddSingleton(mongoConfig);
+            
+            // 显式注册 MongoClient 和 IMongoDatabase
+            services.AddSingleton<IMongoClient>(sp => {
+                var connectionString = mongoConfig.ConnectionString;
+                Console.WriteLine($"创建 MongoClient，连接字符串: {MaskSensitiveInfo(connectionString)}");
+                return new MongoClient(connectionString);
+            });
+            
+            services.AddScoped<IMongoDatabase>(sp => {
+                var client = sp.GetRequiredService<IMongoClient>();
+                var dbName = mongoConfig.DbName;
+                Console.WriteLine($"获取数据库: {dbName}");
+                return client.GetDatabase(dbName);
+            });
+            
+            // 获取配置数据
             ConfigurationData configData = Configuration.Get<ConfigurationData>();
             
             // 记录最终使用的配置
