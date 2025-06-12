@@ -542,6 +542,61 @@ namespace GoNorth
             app.UseRouting();
 
             app.UseAuthentication();
+            app.Use(async (context, next) =>
+            {
+                // 如果是登录请求
+                if (context.Request.Path.StartsWithSegments("/Account/Login") && context.Request.Method == "POST")
+                {
+                    // 从请求中获取用户名
+                    var form = await context.Request.ReadFormAsync();
+                    var username = form["Email"].ToString();
+                    
+                    // 检查用户是否已存在
+                    var userDbAccess = context.RequestServices.GetRequiredService<IUserDbAccess>();
+                    var user = await userDbAccess.GetUserByEmail(username);
+                    
+                    if (user == null)
+                    {
+                        // 创建新用户
+                        var newUser = new GoNorthUser
+                        {
+                            UserName = username,
+                            Email = username,
+                            NormalizedUserName = username.ToUpper(),
+                            NormalizedEmail = username.ToUpper(),
+                            EmailConfirmed = true,
+                            DisplayName = username,
+                            Roles = new List<string> { "User" }
+                        };
+                        
+                        // 使用默认密码 "admin123"
+                        var userManager = context.RequestServices.GetRequiredService<UserManager<GoNorthUser>>();
+                        var password = "admin123";
+                        var result = await userManager.CreateAsync(newUser, password);
+                        
+                        if (result.Succeeded)
+                        {
+                            // 创建成功后继续处理登录
+                            await next();
+                        }
+                        else
+                        {
+                            // 创建失败，返回错误
+                            context.Response.StatusCode = 400;
+                            await context.Response.WriteAsync("Failed to create user");
+                        }
+                    }
+                    else
+                    {
+                        // 用户已存在，继续处理登录
+                        await next();
+                    }
+                }
+                else
+                {
+                    await next();
+                }
+            });
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {
