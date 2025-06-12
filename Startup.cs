@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using GoNorth.Data.Timeline;
 using GoNorth.Services.Timeline;
 using Microsoft.AspNetCore.Http;
+using GoNorth.Middleware;
 using GoNorth.Data.Project;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.LockService;
@@ -531,6 +532,7 @@ namespace GoNorth
             });
 
             app.UseRequestLocalization();
+            app.UseRequestLogging();
 
             app.UseStaticFiles();
 
