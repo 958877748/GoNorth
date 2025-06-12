@@ -17,6 +17,7 @@ using GoNorth.Data.Role;
 using GoNorth.Authentication;
 using GoNorth.Config;
 using GoNorth.Localization;
+using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Globalization;
 using System.Collections.Generic;
