@@ -202,6 +202,11 @@ namespace GoNorth
             Console.WriteLine($"最终使用的 MongoDB 连接字符串: {MaskSensitiveInfo(configData.MongoDb.ConnectionString)}");
             Console.WriteLine($"最终使用的数据库名: {configData.MongoDb.DbName}");
             
+            // 添加数据保护配置
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/tmp/keys"))
+                .SetApplicationName("GoNorth");
+
             // Add Identity
             services.AddIdentity<GoNorthUser, GoNorthRole>(options => {
                 // Password settings
@@ -571,7 +576,7 @@ namespace GoNorth
                         
                         // 使用默认密码 "admin123"
                         var userManager = context.RequestServices.GetRequiredService<UserManager<GoNorthUser>>();
-                        var password = "admin123";
+                        var password = "Admin123";
                         var result = await userManager.CreateAsync(newUser, password);
                         
                         if (result.Succeeded)
