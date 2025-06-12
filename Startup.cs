@@ -553,7 +553,7 @@ namespace GoNorth
                     
                     // 检查用户是否已存在
                     var userDbAccess = context.RequestServices.GetRequiredService<IUserDbAccess>();
-                    var user = await userDbAccess.GetUserByEmail(username);
+                    var user = await userDbAccess.GetUserByNormalizedEmail(username.ToUpper());
                     
                     if (user == null)
                     {
